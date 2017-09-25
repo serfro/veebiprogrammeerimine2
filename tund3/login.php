@@ -1,11 +1,18 @@
 <?php
+	require("../../../config.php");
+	echo $serverHost;
+
+
+
+
+
 $myLoginEmail = "";
 $myLoginPassword = "";
 $mySignupEmail = "";
 $mySignupPassword = "";
 $mySignupName = "";
 $mySignupSurname ="";
-$mySignupGender = "";
+$signupGender = "";
 $signupBirthMonth =null;
 $signupBirthDay=null;
 $signupYearSelectHTML ="";
@@ -13,6 +20,9 @@ $yearNow ="";
 $signupBirthYear= null;
 $monthNamesEt = ["Jaanuar", "Veebruar", "Märts" , "Aprill", "Mai", "Juuni", "Juuli", "August", "September", "Oktoober", "November", "Detsember"];
 $signupBirthDate = "";
+
+
+
 $signupFirstNameError = "";
 $signupFamilyNameError = "";
 $signupBirthDayError = "";
@@ -58,10 +68,16 @@ $signupDaySelectHTML = "";
 
 
 	if(isset($_POST["loginEmail"])){
-		$myLoginEmail = $_POST["loginEmail"];
+		if(empty($_POST["loginEmail"])){
+			$signupEmailError = " (Palun sisesta Email!) Maaramata!";
+		}
+		$mySignupEmail = $_POST["loginEmail"];
 	}
 	if(isset($_POST["loginPassword"])){
-		$myLoginPassword = $_POST["loginPassword"];
+		if(empty($_post["loginEmail"])){
+			$signupPasswordError = " (Palun sisesta parool!) Maaramata!";
+		}
+		$mySignupPassword = $_POST["loginPassword"];
 	}
 	if(isset($_POST["signupEmail"])){
 		$mySignupEmail = $_POST["signupEmail"];
@@ -78,7 +94,7 @@ $signupDaySelectHTML = "";
 	if (isset($_POST["gender"]) && !empty($_POST["gender"])){ //kui on määratud ja pole tühi
 			$gender = intval($_POST["gender"]);
 		} else {
-			//$signupGenderError = " (Palun vali sobiv!) Määramata!";
+			$signupGenderError = " (Palun vali sobiv!) Määramata!";
 	}
 	if(isset($_POST["signupBirthMonth"])){
 		$signupBirthMonth = intval($_POST["signupBirthMonth"]);
@@ -113,6 +129,32 @@ $signupDaySelectHTML = "";
 		$signupBirthDayError = "Viga synnikuupaeva sisestamisel!";
 		}
 	}
+	if (empty($signupFirstNameError) and empty($signupFamilyNameError) and empty($signupBirthDayError) and empty($signupGenderError) and empty($signupEmailError) and empty($signupPasswordError)){
+		echo "Hakkan salvestama!";
+		//krypteerin parroli
+		$signupPassword = hash("sha512", $_POST["signupPassword"]);
+		//echo "\n Parooli " .$_POST["signupPassword"] . " rasi on: " .$signupPassword;
+		//loome andmebaasiyhenduse
+		$database = "if17_frolov";
+		$mysqli = new mysqli($serverHost, $serverUserName, $serverPassword, $database);
+		// valmistame ette kasu andmebaasiserverile
+		$stmt = $mysqli->prepare("INSERT INTO vpusers (firstname, surname, birthday, gender, email, password) VALUES (?, ?, ?, ?, ?, ?)");
+		echo $mysqli->error;
+		// s-string
+		// i -integer
+		// d - decimal
+		
+		$stmt->bind_param("sssiss", $mySignupName, $mySignupSurname, $signupBirthDate, $signupGender, $MySignupEmail, $mySignupPassword);
+		if($stmt->execute()){
+			echo "\n korras!";
+		}
+		else{
+			echo "\n Tekkis viga : " .$stmt->error;
+		}
+		
+		$stmt->close;
+		$mysqli->close;
+	}
 ?>
 
 <!DOCTYPE html>
@@ -139,14 +181,15 @@ $signupDaySelectHTML = "";
 	<p> Sisestage oma andmed</p>
 	<form method="POST">
 		<label for="signupFirstName">Nimi</label>
-		<input name="signupFirstName" type="text">
+		<input name="signupFirstName" type="text" value="">
+		<span><?php echo $signupFirstNameError; ?></span>
 		<label for="signupSurName">Perekonnanimi</label>
 		<input name="signupSurName" type="text">
 		<p></p>
 		<label>Sugu</label><span>
 		<br>
-		<input type="radio" name="$mySignupGender" id="mees" value="1" <?php if ($mySignupGender == '1') {echo 'checked';} ?>><label>Mees</label> <!-- Kõik läbi POST'i on string!!! -->
-		<input type="radio" name="$mySignupGender" id="naine" value="2" <?php if ($mySignupGender == '2') {echo 'checked';} ?>><label>Naine</label>
+		<input type="radio" name="$signupGender" id="mees" value="1" <?php if ($signupGender == '1') {echo 'checked';} ?>><label>Mees</label> <!-- Kõik läbi POST'i on string!!! -->
+		<input type="radio" name="$signupGender" id="naine" value="2" <?php if ($signupGender == '2') {echo 'checked';} ?>><label>Naine</label>
 		<br><br>
 		
 		<?php
