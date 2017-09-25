@@ -6,15 +6,55 @@ $mySignupPassword = "";
 $mySignupName = "";
 $mySignupSurname ="";
 $mySignupGender = "";
-$signupBirthMonth ="";
-
+$signupBirthMonth =null;
+$signupBirthDay=null;
+$signupYearSelectHTML ="";
+$yearNow ="";
+$signupBirthYear= null;
 $monthNamesEt = ["Jaanuar", "Veebruar", "Märts" , "Aprill", "Mai", "Juuni", "Juuli", "August", "September", "Oktoober", "November", "Detsember"];
-
+$signupBirthDate = "";
+$signupFirstNameError = "";
+$signupFamilyNameError = "";
+$signupBirthDayError = "";
+$signupBirthMonthError = "";
+$signupBirthYearError = "";
+$signupGenderError = "";
+$signupEmailError = "";
+$signupPasswordError = "";
+$test = "";
 //synnikuu valik
 $signupMonthSelectHTML="";
 $signupMonthSelectHTML .= '<select name="signupBirthMonth">\n';
 $signupMonthSelectHTML .='<option value="" selected disabled>Vali synnikuu</option> ."\n"';
 
+
+$signupYearSelectHTML = "";
+	$signupYearSelectHTML .= '<select name="signupBirthYear"> \n';
+	$signupYearSelectHTML .= '<option value="" selected disabled>aasta</option> \n';
+	$yearNow = date("Y");
+	for ($i = $yearNow; $i > 1900; $i --){
+		if($i == $signupBirthYear){
+			$signupYearSelectHTML .= '<option value="' .$i .'" selected>' .$i .'</option> \n';
+		} else {
+			$signupYearSelectHTML .= '<option value="' .$i .'">' .$i .'</option> \n';
+		}
+		
+	}
+	$signupYearSelectHTML.= "</select> \n";
+	
+	
+$signupDaySelectHTML = "";
+	$signupDaySelectHTML .= '<select name="signupBirthDay"> \n';
+	$signupDaySelectHTML .= '<option value="" selected disabled>päev</option> \n';
+	for ($i = 1; $i < 32; $i ++){
+		if($i == $signupBirthDay){
+			$signupDaySelectHTML .= '<option value="' .$i .'" selected>' .$i .'</option> \n';
+		} else {
+			$signupDaySelectHTML .= '<option value="' .$i .'">' .$i .'</option> \n';
+		}
+		
+	}
+	$signupDaySelectHTML.= "</select> \n";
 
 
 	if(isset($_POST["loginEmail"])){
@@ -43,6 +83,12 @@ $signupMonthSelectHTML .='<option value="" selected disabled>Vali synnikuu</opti
 	if(isset($_POST["signupBirthMonth"])){
 		$signupBirthMonth = intval($_POST["signupBirthMonth"]);
 	}
+	if(isset($_POST["signupBirthDay"])){
+		$signupBirthMonth = intval($_POST["signupBirthDay"]);
+	}
+	if(isset($_POST["signupBirthYear"])){
+		$signupBirthMonth = intval($_POST["signupBirthYear"]);
+	}
 	
 	foreach($monthNamesEt as $key=>$month){
 	if($key + 1 === $signupBirthMonth){
@@ -53,7 +99,20 @@ $signupMonthSelectHTML .='<option value="" selected disabled>Vali synnikuu</opti
 	}
 }
 	$signupMonthSelectHTML .='</select> ';
-
+	$BirthDate = "";
+	
+	if (isset ($_POST["signupBirthDay"]) and isset ($_POST["signupBirthMonth"]) and isset ($_POST["signupBirthYear"])){
+		if(checkdate (intval($_POST["signupBirthMonth"]), intval($_POST["signupBirthDay"]) , intval($_POST["signupBirthYear"]) )){
+			$test = date_create($_POST["signupBirthMonth"] ."/" .$_POST["signupBirthDay"] ."/" .$_POST["signupBirthYear"]);
+			//var_dump($test);
+			//echo date_format($test, "Y-m-d"); //sellise stringi saadame andmebaasi
+			$BirthDate = date_create($_POST["signupBirthMonth"] ."/" .$_POST["signupBirthDay"] . "/" .$_POST["signupBirthYear"]);
+			$signupBirthDate = date_format($BirthDate, "Y-m-d");
+		}
+		else {
+		$signupBirthDayError = "Viga synnikuupaeva sisestamisel!";
+		}
+	}
 ?>
 
 <!DOCTYPE html>
@@ -102,8 +161,10 @@ $signupMonthSelectHTML .='<option value="" selected disabled>Vali synnikuu</opti
 		<input name="signupFirstName" name="signupSurName" name="gender" name="signupEmail" name="signupPassword" type="submit" value="Kinnita">
 		<label>Sisesta oma synnikuupaev</label>
 		<?php
-			echo$signupMonthSelectHTML;
+			echo $signupDaySelectHTML .$signupMonthSelectHTML .$signupYearSelectHTML;
+			
 		?>
+		<span><?php echo $signupBirthDayError;?> </span>
 	</form>
 	</body>
 </html>
