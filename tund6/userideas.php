@@ -1,6 +1,7 @@
 <?php
 	require("functions.php");
-	
+	$notice = "";
+	$allIdeas = "";
 	// kui pole sisseloginud, siis sisselegimise lehele
 	if(!isset($_SESSION["userId"])){
 		header("Location: login.php");
@@ -15,6 +16,11 @@
 		header("Location: login.php");
 	}
 
+	/*
+	while($stmt->fetch()){
+		
+	}
+	*/
 	$dirToRead = "../../pics/";
 	//kuna tahan ainult pildifaile, siis filtreerin
 	$picFileTypes = ["jpg", "jpeg", "png", "gif"];
@@ -39,6 +45,14 @@
 	$fileCount = count($picFiles);
 	$picNumber = mt_rand(0, $fileCount - 1);
 	$picToShow = $picFiles[$picNumber];
+	// kui soovitakse idee salvestada
+	if(isset($_POST["ideaBtn"])){
+		if(isset($_POST["ideaBtn"]) and isset($_POST["ideaColor"]) and !empty($_POST["ideaBtn"]) and !empty($_POST["ideaColor"])){
+			$myIdea = test_input($_POST["idea"]);
+			$notice = saveIdea($myIdea, $_POST["ideaColor"]);
+		}
+	}
+	$allIdeas = readAllIdeas();
 ?>
 
 <!DOCTYPE html>
@@ -53,11 +67,26 @@
 	<h1>YO</h1>
 	
 	<p>See veebileht on loodud veebiprogrammeerimise kursusel ning ei sisalda mingisugust tõsiseltvõetavat sisu.</p>
-	<p><a href="?logout=1">Logi valja</a></p>
-	<p><a href="userinfo.php">Kasutajate info</a></p>
-	<p><a href="userideas.php">Kasutajate ideed</a></p>
-	<p>Üks pilt Tallinna Ülikoolist!</p>
-	<img src="<?php echo $dirToRead .$picToShow; ?>" alt="Tallinna Ülikool">
+	<p><a href="?logout=1">Logi valja</a>!</p>
+	<p><a href="main.php">Pealeht</a></p>
+	<hr>
+	<h2> Lisa uus mõtte </h2>
+	<form method="POST" action="<?php echo htmlspecialchars ($_SERVER["PHP_SELF"]);?>">
+		<label>Päeva esimene mõtte: </label>
+		<input name="idea" type="text">
+		<br>
+		<label>mõttega seostuv värv: </label>
+		<input name="ideaColor" type="color">
+		<br>
+		<input name="ideaBtn" type="submit" value="Salvesta">
+		<span><?php echo $notice; ?></span>
+	</form>
+	<hr>
+	<h2>Senised mõtted</h2>
+	<div style="width:40%">
+		<?php echo $allIdeas; ?>
+		
+	</div>
 	
 </body>
 </html>

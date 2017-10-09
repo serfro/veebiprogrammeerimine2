@@ -1,6 +1,7 @@
 <?php
 	require("functions.php");
-	
+	//$kasutajanimi = kasutajanimi();
+	//echo $kasutajanimi;
 	// kui pole sisseloginud, siis sisselegimise lehele
 	if(!isset($_SESSION["userId"])){
 		header("Location: login.php");

@@ -1,20 +1,4 @@
 <?php
-	require("functions.php");
-	
-	// kui pole sisseloginud, siis sisselegimise lehele
-	if(!isset($_SESSION["userId"])){
-		header("Location: login.php");
-		exit();
-	}
-	
-	//kui logib valja
-	
-	if (isset($_GET["logout"])){
-		// l6petame sessiooni
-		session_destroy();
-		header("Location: login.php");
-	}
-
 	$dirToRead = "../../pics/";
 	//kuna tahan ainult pildifaile, siis filtreerin
 	$picFileTypes = ["jpg", "jpeg", "png", "gif"];
@@ -51,11 +35,7 @@
 </head>
 <body>
 	<h1>YO</h1>
-	
 	<p>See veebileht on loodud veebiprogrammeerimise kursusel ning ei sisalda mingisugust tõsiseltvõetavat sisu.</p>
-	<p><a href="?logout=1">Logi valja</a></p>
-	<p><a href="userinfo.php">Kasutajate info</a></p>
-	<p><a href="userideas.php">Kasutajate ideed</a></p>
 	<p>Üks pilt Tallinna Ülikoolist!</p>
 	<img src="<?php echo $dirToRead .$picToShow; ?>" alt="Tallinna Ülikool">
 	

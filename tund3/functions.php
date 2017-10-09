@@ -37,15 +37,17 @@ function signIn($email, $password){
 			
 			//liigume edasi pealehele (main.php)
 			header("Location: main.php");
+			exit();
 		} else {
 			$notice = "Vale salasona!";
 		}
 	} else {
 		$notice = 'Sellise kasutajatunnusega "' .$email .'" pole registreeritud!';
 	}
-	return $notice;
+	
 	$stmt->close();
 	$mysqli->close();
+	return $notice;
 }
 function test_input($data){
 		$data = trim($data);//ebavajalikud tyhikud
