@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>
-		lae pilt
+	<?php echo $_SESSION["firstname"] ." " .$_SESSION["lastname"];?>
+		Veebiprogrammeerimine
 	</title>
 </head>

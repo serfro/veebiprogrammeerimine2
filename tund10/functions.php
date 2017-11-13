@@ -10,9 +10,9 @@
 		$notice = "";
 		//ühendus serveriga
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = $mysqli->prepare("SELECT id, firstname, lastname, email, password FROM vpusers WHERE email = ?");
+		$stmt = $mysqli->prepare("SELECT id, email, password FROM vpusers WHERE email = ?");
 		$stmt->bind_param("s", $email);
-		$stmt->bind_result($id, $firstnameFromDb, $lastnameFromDb, $emailFromDb, $passwordFromDb);
+		$stmt->bind_result($id, $emailFromDb, $passwordFromDb);
 		$stmt->execute();
 		
 		//kontrollime vastavust
