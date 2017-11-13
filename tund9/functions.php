@@ -4,7 +4,7 @@
 	
 	//alustan sessiooni
 	session_start();
-
+	
 	//sisselogimise funktsioon
 	function signIn($email, $password){
 		$notice = "";
@@ -25,7 +25,7 @@
 				$_SESSION["userId"] = $id;
 				$_SESSION["firstname"] = $firstnameFromDb;
 				$_SESSION["lastname"] = $lastnameFromDb;
-				$_SESSION["userEmail"] = $email;
+				$_SESSION["userEmail"] = $emailFromDb;
 				
 				//liigume edasi pealehele (main.php)
 				header("Location: main.php");
@@ -40,21 +40,7 @@
 		$mysqli->close();
 		return $notice;
 	}
-	function kasutajanimi($firstname, $surname){
-		$firstName = "";
-		$lastName = "";
-		
-		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = $mysqli->prepare("SELECT firstname, surname FROM vpusers WHERE id = ?");
-		$stmt->bind_param("i", $_SESSION["userId"]);
-		$stmt->bind_result($firstName, $lastName);
-		$stmt->execute();
-		$stmt->fetch();
-		$stmt->close();
-		$mysqli->close();
-		$kasutajanimi = $firstName + $lastName;
-		return $kasutajanimi;
-	}
+	
 	//kasutaja salvestamise funktsioon
 	function signUp($signupFirstName, $signupFamilyName, $signupBirthDate, $gender, $signupEmail, $signupPassword){
 		//loome andmebaasiühenduse
@@ -95,41 +81,46 @@
 		return $notice;
 	}
 	
-	
 	//kõikide ideede lugemise funktsioon
 	function readAllIdeas(){
 		$ideasHTML = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vpuserideas where userid = ? ORDER BY id DESC");
+		//$stmt = $mysqli->prepare("SELECT idea, ideaColor FROM vpuserideas WHERE userid = ?");
+		$stmt = $mysqli->prepare("SELECT id, idea, ideaColor FROM vpuserideas WHERE userid = ? ORDER BY id DESC");
 		$stmt->bind_param("i", $_SESSION["userId"]);
-		$stmt->bind_result($idea, $color);
+		$stmt->bind_result($ideaId, $idea, $color);
 		$stmt->execute();
 		//$result = array();//?
 		while ($stmt->fetch()){
-			$ideasHTML .= '<p style="background-color: ' .$color .'">' .$idea ."</p> \n";
+			$ideasHTML .= '<p style="background-color: ' .$color .'">' .$idea .' | <a href="ideaedit.php?id=' .$ideaId .'">Toimeta</a>' ."</p> \n";
+			//link: <a href="ideaedit.php?id=4"> Toimeta</a>
 		}
 		$stmt->close();
 		$mysqli->close();
 		return $ideasHTML;
 	}
 	
-	// uusima idee lugemine
+	//uusima idee lugemine
 	function latestIdea(){
-		$ideaHTML ="";
+		//$ideaHTML = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = $mysqli->prepare("SELECT idea FROM vpuserideas WHERE id = (SELECT MAX(id) FROM vpuserideas);");
+		$stmt = $mysqli->prepare("SELECT idea FROM vpuserideas WHERE id = (SELECT MAX(id) FROM vpuserideas)");
+		//$stmt->bind_param("i", $last_id);
+		//echo "Viga: " .$mysqli->error;
 		$stmt->bind_result($idea);
-		//if($stmt->execute()){
-		//		echo $idea;
-		//} else {
-		//	echo "tekkis viga" .$stmt->error;
-		//}
+		/*if($stmt->execute()){
+			echo "Hea" .$idea;
+			//$ideaHTML .= $idea;
+		} else {
+			echo "Tekkis viga: " .$stmt->error;
+		}*/
 		$stmt->execute();
-		$stmt->fetch();
+		$stmt->fetch();//nüüd jääb meelde, kui fetch() ei tee, andmeid ei saa!
 		$stmt->close();
 		$mysqli->close();
 		return $idea;
 	}
+	
 	//sisestuse kontrollimise funktsioon
 	function test_input($data){
 		$data = trim($data);//ebavajalikud tühiku jms eemaldada
@@ -153,7 +144,5 @@
 	}
 	echo "Kolmas summa on: " .($a + $b);
 	*/
-	
-	
 	
 ?>

@@ -1,25 +1,19 @@
 <?php
 	require("functions.php");
 	
-	// kui pole sisseloginud, siis sisselegimise lehele
+	//kui pole sisseloginud, siis sisselogimise lehele
 	if(!isset($_SESSION["userId"])){
 		header("Location: login.php");
 		exit();
 	}
 	
-	//kui logib valja
-	
+	//kui logib välja
 	if (isset($_GET["logout"])){
-		// l6petame sessiooni
+		//lõpetame sessiooni
 		session_destroy();
 		header("Location: login.php");
+		exit();
 	}
-
-	/*
-	while($stmt->fetch()){
-		
-	}
-	*/
 	$dirToRead = "../../pics/";
 	//kuna tahan ainult pildifaile, siis filtreerin
 	$picFileTypes = ["jpg", "jpeg", "png", "gif"];
@@ -46,27 +40,24 @@
 	$picToShow = $picFiles[$picNumber];
 ?>
 
-<?php
-	require("header.php");
-	
-	?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>
+	<?php echo $_SESSION["firstname"] ." " .$_SESSION["lastname"]; ?>
+		 veebiprogemise asjad
+	</title>
+</head>
 <body>
-	<h1>YO</h1>
-	
+	<h1><?php echo $_SESSION["firstname"] ." " .$_SESSION["lastname"]; ?></h1>
 	<p>See veebileht on loodud veebiprogrammeerimise kursusel ning ei sisalda mingisugust tõsiseltvõetavat sisu.</p>
-	<p><a href="?logout=1">Logi valja</a>!</p>
-	<p><a href="main.php">Pealeht</a></p>
-	<hr>
-	<h2> K6ik systeemi kasutajad</h2>
-	<table border = "1" style="border: 1px solid black; border-collapse: collapse">
-	<tr>
-		<th>Eesnimi</th><th>Perekonnanimi</th><th>e-post</th>
-	</tr>
-	<tr></tr>
-		<td>Juku</td><td>Porgand</td><td>juku.porgand@aed.ee</td>
-	</table>
+	<p><a href="?logout=1">Logi välja</a>!</p>
+	<p><a href="usersinfo.php">Kasutajate info</a></p>
+	<p><a href="usersideas.php">Kasutajate ideed</a></p>
+	<p><a href="photoupload.php">Fotode üleslaadimine</a></p>
+	<p>Üks pilt Tallinna Ülikoolist!</p>
+	<img src="<?php echo $dirToRead .$picToShow; ?>" alt="Tallinna Ülikool">
 	
-<?php
-	require("footer.php");
-	
-	?>
+</body>
+</html>
